@@ -1,8 +1,8 @@
 # ARIA — Autonomous Robotic Intelligence Assistant
 ### Project Specification Document
-**Version:** 0.1.2 — CUDA Confirmed  
-**Status:** Draft  
-**Last Updated:** 2026-05-22  
+**Version:** 0.2.0 — Phase 1 Complete  
+**Status:** Active  
+**Last Updated:** 2026-05-24  
 
 ---
 
@@ -86,35 +86,42 @@ aria/
 
 ## 5. Development Phases
 
-### ✅ Phase 0 — Foundation (Current)
+### ✅ Phase 0 — Foundation (Complete)
+
 **Goal:** Get the environment set up and document the plan.
 
-- [ ] Create GitHub repository
-- [ ] Set up VSCode workspace
-- [ ] Install Ollama and pull a starter model
-- [ ] Create Python virtual environment
-- [ ] Test basic LLM response from Ollama API
-- [ ] Commit `PROJECT_SPEC.md` and `README.md`
+- [x] Create GitHub repository
+- [x] Set up VSCode workspace
+- [x] Install Ollama and pull a starter model (`mistral`)
+- [x] Create Python virtual environment
+- [x] Test basic LLM response from Ollama API
+- [x] Commit `PROJECT_SPEC_1.md` and `README.md`
 
 ---
 
-### 🔲 Phase 1 — Voice-to-Note (First Feature)
+### ✅ Phase 1 — Voice-to-Note (Complete)
+
 **Goal:** Say a command → ARIA saves it as a `.txt` file.
 
 **How it works:**
 1. User speaks into microphone
-2. Whisper converts speech to text (locally)
-3. LLM optionally cleans up or formats the text
-4. Output saved as a timestamped `.txt` file in `/notes`
+2. Whisper converts speech to text (locally, CPU mode)
+3. Output saved as a timestamped `.txt` file in `/notes`
 
 **Deliverables:**
-- [ ] `voice_listener.py` — captures audio and runs Whisper STT
-- [ ] `note_taker.py` — writes the transcription to disk
-- [ ] Basic CLI runner (`python aria.py`)
-- [ ] Notes saved as: `notes/YYYY-MM-DD_HH-MM-SS.txt`
+- [x] `voice_listener.py` — captures audio and runs Whisper STT
+- [x] `note_taker.py` — writes the transcription to disk
+- [x] Basic CLI runner (`python aria.py`)
+- [x] Notes saved as: `notes/YYYY-MM-DD_HH-MM-SS.txt`
 
 **Acceptance Criteria:**
-- Say a sentence → file appears in `/notes` with correct text within ~5 seconds
+
+- [x] Say a sentence → file appears in `/notes` with correct text within ~5 seconds
+
+**Implementation Notes:**
+
+- Whisper running in CPU mode (`int8`) — CUDA DLL path issue on Windows to revisit
+- 3-word minimum filter added to suppress Whisper hallucinations on short/silent audio
 
 ---
 
@@ -242,10 +249,11 @@ python aria.py
 
 | # | Question | Decision | Date |
 |---|---|---|---|
-| 1 | Which STT engine? | `faster-whisper` (best speed/accuracy balance) | TBD |
-| 2 | Which LLM for Phase 1? | `llama3.2:3b` (fast, low RAM) | TBD |
-| 3 | Wake word engine? | Evaluate `openWakeWord` vs `porcupine` | Phase 3 |
-| 4 | GUI or CLI only? | CLI first, GUI optional later | TBD |
+| 1 | Which STT engine? | `faster-whisper` (best speed/accuracy balance) | 2026-05-24 |
+| 2 | Which Whisper model for Phase 1? | `base` — good accuracy, fast on CPU | 2026-05-24 |
+| 3 | GPU or CPU for Whisper? | CPU (`int8`) for now — CUDA DLL issue on Windows to revisit | 2026-05-24 |
+| 4 | Wake word engine? | Evaluate `openWakeWord` vs `porcupine` | Phase 3 |
+| 5 | GUI or CLI only? | CLI first, GUI optional later | TBD |
 
 ---
 
@@ -253,6 +261,7 @@ python aria.py
 
 | Version | Date | Changes |
 |---|---|---|
+| 0.2.0 | 2026-05-24 | Phase 1 complete — Voice-to-Note working; CPU mode; 3-word filter added |
 | 0.1.2 | 2026-05-23 | Confirmed CUDA 13.0, driver 581.32, 8188 MB VRAM available |
 | 0.1.1 | 2026-05-22 | Added hardware profile (Dell XPS 16), updated model recommendations and Windows quickstart |
 | 0.1.0 | 2026-05-22 | Initial blueprint created |
