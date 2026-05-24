@@ -13,7 +13,7 @@ def _get_model(model_size="base"):
     global _model
     if _model is None:
         print(f"[ARIA] Loading Whisper model '{model_size}'...")
-        _model = WhisperModel(model_size, device="cuda", compute_type="float16")
+        _model = WhisperModel(model_size, device="cpu", compute_type="int8")
         print("[ARIA] Model ready.")
     return _model
 

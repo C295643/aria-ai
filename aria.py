@@ -15,9 +15,12 @@ def main():
         audio = record_audio(duration_seconds=RECORD_SECONDS)
         text = transcribe(audio, model_size=WHISPER_MODEL)
 
-        if text.strip():
+        word_count = len(text.strip().split())
+        if word_count >= 3:
             print(f"[ARIA] Transcribed: {text}")
             save_note(text)
+        elif text.strip():
+            print(f"[ARIA] Ignored (too short): '{text.strip()}'")
         else:
             print("[ARIA] Nothing detected, note not saved.")
 
