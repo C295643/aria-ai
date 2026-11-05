@@ -1,8 +1,8 @@
 # ARIA — Autonomous Robotic Intelligence Assistant
 ### Project Specification Document
-**Version:** 0.2.0 — Phase 1 Complete  
-**Status:** Active  
-**Last Updated:** 2026-05-24  
+**Version:** 0.3.0 — Phase 2 In Progress
+**Status:** Active
+**Last Updated:** 2026-11-05
 
 ---
 
@@ -30,18 +30,18 @@ The project is built incrementally: each phase adds a new capability layer on to
 
 ### 3.1 Local LLM Engine
 - **Ollama** — runs and manages local language models
-  - Recommended starter model: `llama3.2` (3B, fast, low RAM) or `mistral` (7B, smarter)
-  - Provides an OpenAI-compatible local API at `http://localhost:11434`
+  - Configured model: `mistral`
+  - ARIA uses Ollama's local API at `http://localhost:11434`
 
 ### 3.2 Voice Input (Speech-to-Text)
-- **faster-whisper** (`large-v3` model recommended for this machine)
-  - Runs fully on-device via CUDA (RTX 4060)
+- **faster-whisper** (`base` model, CPU, `int8` compute)
+  - Runs fully on-device; CUDA acceleration is not currently enabled in the implementation
   - No microphone data sent to cloud
   - Significantly faster than original `openai-whisper`
 
 ### 3.3 Agent Framework
 - **Python** — primary language
-- **LangChain** or direct Ollama API calls — orchestration layer
+- Direct calls to the local Ollama API — intent classification and command routing
 
 ### 3.4 Text-to-Speech (optional, future)
 - **Piper TTS** or **Coqui TTS** — local voice responses
@@ -121,22 +121,27 @@ aria/
 **Implementation Notes:**
 
 - Whisper running in CPU mode (`int8`) — CUDA DLL path issue on Windows to revisit
-- 3-word minimum filter added to suppress Whisper hallucinations on short/silent audio
+- Nonempty transcriptions are routed to the agent, including short commands such as "list notes"; empty transcriptions are ignored
 
 ---
 
-### 🔲 Phase 2 — Command Understanding
+### 🔄 Phase 2 — Command Understanding (In Progress)
 **Goal:** ARIA understands *what you want*, not just what you said.
 
 **How it works:**
 1. Transcribed text is sent to local LLM
-2. LLM identifies intent (e.g., "take a note", "remind me", "search for...")
-3. ARIA routes to the appropriate module
+2. LLM classifies the intent as `save_note`, `list_notes`, or `unknown`
+3. ARIA saves the transcription or displays up to five recent notes
 
 **Deliverables:**
-- [ ] Intent classifier prompt
-- [ ] Command router in `agent.py`
-- [ ] At least 2 routable commands
+- [x] Intent classifier prompt
+- [x] Command router in `agent.py`
+- [x] Two routable commands: save a note and list recent notes
+
+**Acceptance Criteria:**
+
+- [ ] A save-note command creates a timestamped `.txt` file in `/notes`
+- [ ] A list-notes command displays up to five recent notes
 
 ---
 

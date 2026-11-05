@@ -4,14 +4,15 @@ A fully local AI assistant that runs entirely on your machine — no cloud APIs,
 
 ## Current Capabilities
 
-- **Voice-to-Note** — speak a sentence, ARIA transcribes it and saves it as a timestamped `.txt` file in `/notes`
+- **Voice commands** — ARIA transcribes speech and uses a local Ollama model to classify it as a request to save a note, list recent notes, or an unknown command
+- **Note management** — save transcriptions as timestamped `.txt` files or list the five most recent notes
 
 ## Tech Stack
 
 | Component | Tool |
 | --- | --- |
 | Speech-to-Text | `faster-whisper` (Whisper `base` model, CPU) |
-| LLM Engine | Ollama (used from Phase 2 onward) |
+| LLM Engine | Ollama (`mistral`, local intent classification) |
 | Language | Python 3.11+ |
 | Platform | Windows 11, VSCode |
 
@@ -20,7 +21,7 @@ A fully local AI assistant that runs entirely on your machine — no cloud APIs,
 ### Prerequisites
 
 - Python 3.11+
-- [Ollama](https://ollama.com) installed (required from Phase 2 onward)
+- [Ollama](https://ollama.com) installed and running, with the `mistral` model available
 
 ### Setup
 
@@ -35,6 +36,9 @@ python -m venv .venv
 
 # 3. Install dependencies
 pip install -r requirements.txt
+
+# 4. Download the configured local language model
+ollama pull mistral
 ```
 
 ### Run
@@ -44,7 +48,7 @@ pip install -r requirements.txt
 python aria.py
 ```
 
-Press **Enter** to start a 5-second recording. ARIA will transcribe your speech and save it to `notes/YYYY-MM-DD_HH-MM-SS.txt`. Press **Ctrl+C** to quit.
+Press **Enter** to start a 5-second recording. Say a command to save a note or list your recent notes; ARIA transcribes it and asks the local model to classify the intent. Saved notes appear in `notes/YYYY-MM-DD_HH-MM-SS.txt`. Press **Ctrl+C** to quit.
 
 ## Project Structure
 
@@ -53,9 +57,10 @@ aria-ai/
 ├── aria.py                  ← CLI entry point
 ├── core/
 │   ├── voice_listener.py    ← microphone capture + Whisper STT
-│   └── llm_client.py        ← Ollama interface (Phase 2+)
+│   ├── agent.py             ← intent classification and command routing
+│   └── llm_client.py        ← local Ollama interface
 ├── modules/
-│   └── note_taker.py        ← saves transcriptions to /notes
+│   └── note_taker.py        ← saves and lists notes in /notes
 ├── notes/                   ← output folder (gitignored)
 ├── logs/                    ← log output (gitignored)
 ├── requirements.txt
@@ -68,7 +73,7 @@ aria-ai/
 | --- | --- | --- |
 | 0 — Foundation | ✅ Complete | Environment setup, repo, Ollama, Python venv |
 | 1 — Voice-to-Note | ✅ Complete | Voice recording → Whisper STT → `.txt` note |
-| 2 — Command Understanding | 🔲 Next | LLM identifies intent and routes to the right module |
+| 2 — Command Understanding | 🔄 In progress | Local LLM routes save-note and list-notes commands |
 | 3 — Wake Word | 🔲 Planned | Always-on listener, activates on trigger word |
 | 4 — Memory & Context | 🔲 Planned | Vector DB for note retrieval across sessions |
 | 5 — Expanded Capabilities | 🔲 Future | Reminders, TTS, file search, browser control |

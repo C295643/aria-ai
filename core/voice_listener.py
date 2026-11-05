@@ -26,7 +26,10 @@ def record_audio(duration_seconds: int = 5) -> np.ndarray:
         channels=CHANNELS,
         dtype=DTYPE,
     )
-    sd.wait()
+    try:
+        sd.wait()
+    finally:
+        sd.stop()
     print("[ARIA] Recording complete.")
     return audio.flatten()
 
