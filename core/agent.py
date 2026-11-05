@@ -1,6 +1,6 @@
 from urllib.error import URLError
 
-from core.llm_client import ask
+from core.llm_client import DEFAULT_MODEL, ask
 from modules.note_taker import save_note, list_notes
 
 INTENT_PROMPT = """You are a voice assistant intent classifier. The user said the following:
@@ -28,7 +28,11 @@ def handle(text: str) -> None:
     try:
         intent = classify_intent(text)
     except (URLError, TimeoutError, ConnectionError):
-        print("[ARIA] Could not reach Ollama or complete the request. Check that Ollama is running and try again.")
+        print(
+            "[ARIA] Could not reach Ollama or complete the request. "
+            "Check that Ollama is running and try again. "
+            f"If the model is missing, run: ollama pull {DEFAULT_MODEL}"
+        )
         return
     print(f"[ARIA] Intent: {intent}")
 

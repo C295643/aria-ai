@@ -88,13 +88,14 @@ Remove-Item Env:ARIA_INPUT_DEVICE -ErrorAction SilentlyContinue
 ### Troubleshooting Audio
 
 - **Nothing detected:** confirm the displayed microphone, check mute and input level in Windows Settings > System > Sound > Input, and speak during the five-second recording window.
-- **Ignored (too short):** ARIA only routes transcriptions containing at least three words. Try "Take a note: buy groceries tomorrow."
+- **Short commands:** all nonempty transcriptions reach the router, including "List notes" and "Read notes"; there is no three-word minimum.
+- **Ollama request fails:** ARIA displays a retry message and returns to the recording prompt. Check that Ollama is running and that `ollama list` includes `mistral`; download a missing model with `ollama pull mistral`, then press Enter to record another command.
 - **First-run model download fails:** the Whisper `base` model must be downloaded from Hugging Face before it can run locally. Initial dependency and model downloads require internet access; inference runs on your machine once the models are available.
 - **Where is the text saved?** Transcriptions are displayed in the terminal. Only commands classified as `save_note` create files in `notes/`; the `logs/` directory is not currently used.
 
 ## Tests
 
-Run the microphone-selection and clean-shutdown regression tests without opening a microphone:
+Run the microphone-selection, command-routing, Ollama-recovery, and clean-shutdown regression tests without opening a microphone or calling Ollama:
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
