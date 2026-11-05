@@ -1,12 +1,12 @@
 from core.voice_listener import record_audio, transcribe
-from modules.note_taker import save_note
+from core.agent import handle
 
 RECORD_SECONDS = 5
 WHISPER_MODEL = "base"  # options: tiny, base, small, medium, large-v3
 
 
 def main():
-    print("=== ARIA — Voice to Note ===")
+    print("=== ARIA — Voice Assistant ===")
     print(f"Using Whisper model: {WHISPER_MODEL}")
     print("Press Ctrl+C to quit.\n")
 
@@ -17,13 +17,15 @@ def main():
 
         word_count = len(text.strip().split())
         if word_count >= 3:
-            print(f"[ARIA] Transcribed: {text}")
-            save_note(text)
+            handle(text)
         elif text.strip():
             print(f"[ARIA] Ignored (too short): '{text.strip()}'")
         else:
-            print("[ARIA] Nothing detected, note not saved.")
+            print("[ARIA] Nothing detected.")
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n[ARIA] Stopped.")

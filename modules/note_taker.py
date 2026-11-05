@@ -11,3 +11,10 @@ def save_note(text: str) -> Path:
     note_path.write_text(text, encoding="utf-8")
     print(f"[ARIA] Note saved: {note_path}")
     return note_path
+
+
+def list_notes(limit: int = 5) -> list[str]:
+    if not NOTES_DIR.exists():
+        return []
+    notes = sorted(NOTES_DIR.glob("*.txt"), reverse=True)[:limit]
+    return [f"{p.stem}: {p.read_text(encoding='utf-8').strip()}" for p in notes]
