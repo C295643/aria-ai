@@ -42,6 +42,7 @@ class CommandTests(unittest.TestCase):
     def test_ollama_transport_errors_are_retryable(self):
         errors = (
             URLError("Connection refused"),
+            HTTPError("http://localhost:11434/api/generate", 404, "Model not found", {}, None),
             HTTPError("http://localhost:11434/api/generate", 503, "Unavailable", {}, None),
             TimeoutError("Request timed out"),
             ConnectionResetError("Connection reset"),
@@ -61,6 +62,7 @@ class CommandTests(unittest.TestCase):
             save_note.assert_not_called()
             list_notes.assert_not_called()
             self.assertIn("Check that Ollama is running and try again.", output.getvalue())
+            self.assertIn("ollama pull mistral", output.getvalue())
 
     def test_loop_accepts_next_command_after_ollama_failure(self):
         output = io.StringIO()

@@ -50,6 +50,57 @@ python aria.py
 
 Press **Enter** to start a 5-second recording. Say a command to save a note or list your recent notes; ARIA transcribes it and asks the local model to classify the intent. Saved notes appear in `notes/YYYY-MM-DD_HH-MM-SS.txt`. Press **Ctrl+C** to quit.
 
+ARIA is not listening while it waits for Enter. **Ctrl+C** stops ARIA, releases an active microphone recording, and prints `[ARIA] Stopped.` without a traceback. Restart ARIA after changing its code or microphone setting.
+
+### Choose Your Microphone
+
+ARIA uses the system default microphone unless `ARIA_INPUT_DEVICE` is set. Headphones used for playback do not necessarily supply the default microphone; Windows may still select a webcam or laptop input.
+
+Stop ARIA first. List available devices:
+
+```powershell
+.\.venv\Scripts\python.exe -m sounddevice
+```
+
+Choose a device with input channels. In the **same PowerShell terminal**, set its name and host API, then start ARIA. This Sony headset is an example; replace it with a device from your list:
+
+```powershell
+$env:ARIA_INPUT_DEVICE = 'Headset (WH-1000XM4), MME'
+.\.venv\Scripts\python.exe aria.py
+```
+
+After pressing Enter, confirm the selection before speaking:
+
+```text
+[ARIA] Microphone: Headset (WH-1000XM4), MME
+[ARIA] Recording for 5 seconds... Speak now.
+```
+
+The override applies to this terminal session, not every VS Code terminal or future session. If the output says `[ARIA] Microphone: system default`, the override is not set in the process running ARIA. A microphone icon only indicates that an input is open, not that the intended microphone is receiving sound.
+
+To return to the Windows default input, stop ARIA, run the following, and restart it:
+
+```powershell
+Remove-Item Env:ARIA_INPUT_DEVICE -ErrorAction SilentlyContinue
+.\.venv\Scripts\python.exe aria.py
+```
+
+### Troubleshooting Audio
+
+- **Nothing detected:** confirm the displayed microphone, check mute and input level in Windows Settings > System > Sound > Input, and speak during the five-second recording window.
+- **Short commands:** all nonempty transcriptions reach the router, including "List notes" and "Read notes"; there is no three-word minimum.
+- **Ollama request fails:** ARIA displays a retry message and returns to the recording prompt. Check that Ollama is running and that `ollama list` includes `mistral`; download a missing model with `ollama pull mistral`, then press Enter to record another command.
+- **First-run model download fails:** the Whisper `base` model must be downloaded from Hugging Face before it can run locally. Initial dependency and model downloads require internet access; inference runs on your machine once the models are available.
+- **Where is the text saved?** Transcriptions are displayed in the terminal. Only commands classified as `save_note` create files in `notes/`; the `logs/` directory is not currently used.
+
+## Tests
+
+Run the microphone-selection, command-routing, Ollama-recovery, and clean-shutdown regression tests without opening a microphone or calling Ollama:
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests -v
+```
+
 ## Project Structure
 
 ```text
