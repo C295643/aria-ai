@@ -1,3 +1,5 @@
+import os
+
 import sounddevice as sd
 import numpy as np
 from faster_whisper import WhisperModel
@@ -19,12 +21,15 @@ def _get_model(model_size="base"):
 
 
 def record_audio(duration_seconds: int = 5) -> np.ndarray:
+    device = os.environ.get("ARIA_INPUT_DEVICE") or None
+    print(f"[ARIA] Microphone: {device or 'system default'}")
     print(f"[ARIA] Recording for {duration_seconds} seconds... Speak now.")
     audio = sd.rec(
         int(duration_seconds * SAMPLE_RATE),
         samplerate=SAMPLE_RATE,
         channels=CHANNELS,
         dtype=DTYPE,
+        device=device,
     )
     try:
         sd.wait()
