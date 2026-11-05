@@ -1,3 +1,5 @@
+from urllib.error import URLError
+
 from core.llm_client import ask
 from modules.note_taker import save_note, list_notes
 
@@ -23,7 +25,11 @@ def classify_intent(text: str) -> str:
 
 def handle(text: str) -> None:
     print(f"[ARIA] You said: {text}")
-    intent = classify_intent(text)
+    try:
+        intent = classify_intent(text)
+    except (URLError, TimeoutError, ConnectionError):
+        print("[ARIA] Could not reach Ollama or complete the request. Check that Ollama is running and try again.")
+        return
     print(f"[ARIA] Intent: {intent}")
 
     if intent == "save_note":
