@@ -15,11 +15,8 @@ def main():
         audio = record_audio(duration_seconds=RECORD_SECONDS)
         text = transcribe(audio, model_size=WHISPER_MODEL)
 
-        word_count = len(text.strip().split())
-        if word_count >= 3:
+        if text.strip():
             handle(text)
-        elif text.strip():
-            print(f"[ARIA] Ignored (too short): '{text.strip()}'")
         else:
             print("[ARIA] Nothing detected.")
 

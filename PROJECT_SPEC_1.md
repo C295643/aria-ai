@@ -121,7 +121,7 @@ aria/
 **Implementation Notes:**
 
 - Whisper running in CPU mode (`int8`) — CUDA DLL path issue on Windows to revisit
-- 3-word minimum filter added to suppress Whisper hallucinations on short/silent audio
+- Nonempty transcriptions are routed to the agent, including short commands such as "list notes"; empty transcriptions are ignored
 
 ---
 
